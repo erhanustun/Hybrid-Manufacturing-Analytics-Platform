@@ -1,0 +1,17 @@
+{
+    "name": "mfg-postgres-connector",
+    "config": {
+      "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+      "database.hostname": "postgres",
+      "database.port": "5432",
+      "database.user": "debezium",
+      "database.password": "dbz_pass",
+      "database.dbname": "manufacturing",
+      "topic.prefix": "mfg",
+      "publication.name": "dbz_publication",
+      "plugin.name": "pgoutput",
+      "slot.name": "mfg_slot",
+      "table.include.list": "public.machine_events"
+    }
+  }
+  
