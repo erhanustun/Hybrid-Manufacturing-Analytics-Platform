@@ -12,3 +12,6 @@ __pycache__/
 
 # Environment files
 .env
+# GCP Credentials - DO NOT COMMIT
+infra/gcp-credentials/
+*.json
