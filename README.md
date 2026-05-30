@@ -15,7 +15,8 @@ An end-to-end data engineering platform that captures transactional events from 
 - ✅ Real-time CDC using Debezium (WAL-based, no polling)
 - ✅ Kafka event streaming (raw + clean topics)
 - ✅ Spark Structured Streaming for event transformation
-- 🚧 Cloud storage layer (GCS + BigQuery) — in progress
+- ✅ Google Cloud Storage sink with Parquet output
+- ✅ BigQuery External Table over GCS Parquet files
 - 🚧 dbt transformation models — planned
 - 🚧 Airflow orchestration — planned
 
@@ -38,22 +39,40 @@ Manufacturing systems generate high-frequency operational events (machine status
          │ WAL-based CDC (Debezium)
          ↓
 ┌─────────────────┐
-│   Kafka Broker  │  Raw CDC events (mfg.public.machine_events)
+│   Kafka Broker  │  Raw CDC events
+│                 │  topic: mfg.public.machine_events
 └────────┬────────┘
          │
          ↓
 ┌─────────────────┐
 │  Spark Stream   │  Parse Debezium envelope → Clean JSON
+│ cdc_to_clean_   │  (cdc_to_clean_topic.py)
+│   topic.py      │
 └────────┬────────┘
          │
          ↓
 ┌─────────────────┐
-│   Kafka Topic   │  Clean events (mfg.clean.machine_events)
-│    (Clean)      │
+│   Kafka Topic   │  Clean events
+│    (Clean)      │  topic: mfg.clean.machine_events
 └────────┬────────┘
          │
          ↓
-   [GCS → BigQuery → dbt]  ← Coming Next
+┌─────────────────┐
+│  Spark Stream   │  Write Parquet to GCS
+│ kafka_to_gcs.py │  (kafka_to_gcs.py)
+└────────┬────────┘
+         │
+         ↓
+┌─────────────────┐
+│  Google Cloud   │  gs://mfg-machine-events-erhan/machine_events/
+│    Storage      │  (Parquet files)
+└────────┬────────┘
+         │
+         ↓
+┌─────────────────┐
+│    BigQuery     │  External Table
+│ External Table  │  manufacturing.machine_events
+└─────────────────┘
 ```
 ---
 
@@ -178,6 +197,7 @@ Detailed daily engineering notes are available in the [`docs/`](./docs/) folder.
 **Key documents:**
 - [Day 5: CDC Setup with Debezium](./docs/day-05-cdc.md)
 - [Day 6: Spark Streaming Transformation](./docs/day-06-spark-streaming.md)
+- [Day 7: Kafka to GCS and BigQuery External Table](./docs/day-07-gcs-bigquery.md)
 
 ---
 
@@ -205,7 +225,7 @@ This project is being built in **7 phases over 90 days.**
 
 ---
 
-**Status:** Day 6 of 90 completed 
+**Status:** Day 7 of 90 completed
 
 
 

@@ -54,20 +54,37 @@ services:
     restart: "no"
 
   spark:
-    build: 
-      context: .
-      dockerfile: Dockerfile.spark
-    # image: bitnami/spark:latest
-    depends_on:
-      - kafka
-    environment:
-      - SPARK_MODE=master
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.spark
+    image: infra-spark
+    container_name: infra-spark-1
     ports:
       - "4040:4040"
-      - "8080:8080"  # Spark UI
+      - "8080:8080"
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /opt/gcp-credentials/service-account.json
     volumes:
       - ../spark:/opt/spark-apps
-    command: ["bash", "-lc", "sleep infinity"]
+      - ./gcp-credentials:/opt/gcp-credentials:ro
+    depends_on:
+      - kafka
+
+  # spark:
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile.spark
+  #   # image: bitnami/spark:latest
+  #   depends_on:
+  #     - kafka
+  #   environment:
+  #     - SPARK_MODE=master
+  #   ports:
+  #     - "4040:4040"
+  #     - "8080:8080"  # Spark UI
+  #   volumes:
+  #     - ../spark:/opt/spark-apps
+  #   command: ["bash", "-lc", "sleep infinity"] 
 
   postgres:
     image: postgres:16
