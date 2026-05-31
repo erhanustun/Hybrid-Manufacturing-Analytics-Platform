@@ -3,7 +3,7 @@
 > Real-time Change Data Capture (CDC) and streaming analytics pipeline for manufacturing systems
 
 [![Project Status](https://img.shields.io/badge/Status-In%20Development-yellow)](https://github.com/yourusername/hybrid-manufacturing-analytics-platform)
-[![Days Completed](https://img.shields.io/badge/Progress-Day%206%2F90-blue)](./docs/)
+[![Days Completed](https://img.shields.io/badge/Progress-Day%207%2F90-blue)](./docs/)
 
 ---
 
@@ -85,7 +85,7 @@ Manufacturing systems generate high-frequency operational events (machine status
 | **Streaming** | Apache Kafka 7.6 |
 | **Processing** | Spark Structured Streaming 3.5.1 |
 | **Orchestration** | Docker Compose |
-| **Storage** | GCS + BigQuery *(planned)* |
+| **Storage** | GCS + BigQuery |
 | **Transformation** | dbt *(planned)* |
 | **Workflow** | Apache Airflow *(planned)* |
 
