@@ -29,7 +29,6 @@ BigQuery External Table
 ---
 
 ## Architecture
-
 ```text
 PostgreSQL (OLTP)
         ↓

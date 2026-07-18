@@ -1,0 +1,11 @@
+name: manufacturing_analytics
+version: '1.0.0'
+config-version: 2
+
+profile: manufacturing_analytics
+
+model-paths: ["models"]
+
+models:
+  manufacturing_analytics:
+    +materialized: view

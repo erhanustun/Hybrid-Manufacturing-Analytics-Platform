@@ -1,0 +1,25 @@
+version: 2
+sources:
+  - name: manufacturing
+    database: manufacturing-analytics-490219
+    schema: manufacturing
+    tables:
+      - name: machine_events
+        description: "External BigQuery table over GCS Parquet machine event data"
+        columns:
+          - name: event_id
+            description: "Unique event identifier"
+            tests:
+              - not_null
+          - name: machine_id
+            description: "Machine identifier"
+          - name: event_type
+            description: "Type of machine event"
+          - name: event_time
+            description: "Event timestamp from source system"
+          - name: error_code
+            description: "Machine error code if event is an error"
+          - name: payload
+            description: "Original event payload as JSON string"
+          - name: cdc_op
+            description: "CDC operation type from Debezium"

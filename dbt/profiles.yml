@@ -1,0 +1,12 @@
+manufacturing_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: manufacturing-analytics-490219
+      dataset: manufacturing
+      keyfile: /opt/gcp-credentials/service-account.json
+      location: EU
+      threads: 4
+      timeout_seconds: 300

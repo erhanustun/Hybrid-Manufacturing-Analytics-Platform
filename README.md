@@ -3,9 +3,35 @@
 > Real-time Change Data Capture (CDC) and streaming analytics pipeline for manufacturing systems
 
 [![Project Status](https://img.shields.io/badge/Status-In%20Development-yellow)](https://github.com/yourusername/hybrid-manufacturing-analytics-platform)
-[![Days Completed](https://img.shields.io/badge/Progress-Day%207%2F90-blue)](./docs/)
+[![Days Completed](https://img.shields.io/badge/Progress-Day%208%2F90-blue)](./docs/)
 
 ---
+
+## End-to-End Pipeline
+
+```text
+PostgreSQL
+    │
+Debezium CDC
+    │
+Kafka (Raw)
+    │
+Spark Streaming
+    │
+Kafka (Clean)
+    │
+Spark Streaming
+    │
+Google Cloud Storage
+    │
+BigQuery
+    │
+dbt Sources
+    │
+dbt Staging
+    │
+dbt Fact Models
+```
 
 ## Overview
 An end-to-end data engineering platform that captures transactional events from manufacturing systems in real time, processes them with streaming technologies, and delivers analytics-ready data for operational intelligence.
@@ -17,7 +43,7 @@ An end-to-end data engineering platform that captures transactional events from 
 - ✅ Spark Structured Streaming for event transformation
 - ✅ Google Cloud Storage sink with Parquet output
 - ✅ BigQuery External Table over GCS Parquet files
-- 🚧 dbt transformation models — planned
+- ✅ Data quality tests using dbt
 - 🚧 Airflow orchestration — planned
 
 ---
@@ -71,7 +97,19 @@ Manufacturing systems generate high-frequency operational events (machine status
          ↓
 ┌─────────────────┐
 │    BigQuery     │  External Table
-│ External Table  │  manufacturing.machine_events
+│ machine_events  │
+└────────┬────────┘
+         │ source()
+         ↓
+┌─────────────────┐
+│      dbt        │
+│stg_machine_events│
+└────────┬────────┘
+         │ ref()
+         ↓
+┌─────────────────┐
+│      dbt        │
+│fct_machine_events│
 └─────────────────┘
 ```
 ---
@@ -86,7 +124,7 @@ Manufacturing systems generate high-frequency operational events (machine status
 | **Processing** | Spark Structured Streaming 3.5.1 |
 | **Orchestration** | Docker Compose |
 | **Storage** | GCS + BigQuery |
-| **Transformation** | dbt *(planned)* |
+| **Transformation** | dbt Core 1.9 |
 | **Workflow** | Apache Airflow *(planned)* |
 
 ---
@@ -154,11 +192,21 @@ curl -X POST http://localhost:8083/connectors \
 ```
 
 ### 3️⃣ Run Spark Streaming Job
+Raw CDC → Clean Kafka Topic
 ```bash
 docker exec -it infra-spark-1 spark-submit \
-  --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.1 \
+  --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.4 \
   /opt/spark-apps/jobs/cdc_to_clean_topic.py
 ```
+
+Clean Kafka Topic → Google Cloud Storage (Parquet)
+```bash
+docker exec -it infra-spark-1 spark-submit \
+  --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.4 \
+  /opt/spark-apps/jobs/kafka_to_gcs.py
+```
+Note:
+The Kafka connector package is required because Apache Spark does not include Kafka integration by default.
 
 ### 4️⃣ Test the Pipeline
 **Insert a test event:**
@@ -173,7 +221,8 @@ VALUES (1, 'ERROR', now(), 'E999', '{\"note\": \"TEST_EVENT\"}');
 ```bash
 docker exec -it infra-kafka-1 kafka-console-consumer \
   --bootstrap-server localhost:9092 \
-  --topic mfg.clean.machine_events
+  --topic mfg.clean.machine_events \
+  --from-beginning
 ```
 
 **Expected output:**
@@ -188,7 +237,44 @@ docker exec -it infra-kafka-1 kafka-console-consumer \
   "cdc_op": "c"
 }
 ```
+
+### Verify Parquet Files in GCS
+
+Cloud Storage:
+
+gs://mfg-machine-events-erhan/machine_events/
+
+Expected:
+
+part-00000-xxxxx.snappy.parquet
+part-00000-yyyyy.snappy.parquet
+
+### Verify Data in BigQuery
+
+```sql
+SELECT *
+FROM manufacturing.machine_events
+LIMIT 10;
+
 ---
+
+### Analytics Layer (dbt)
+
+The analytics layer is implemented using dbt.
+
+Current models:
+
+- stg_machine_events
+- fct_machine_events
+
+Implemented features:
+
+- dbt Sources
+- source()
+- ref()
+- schema.yml
+- Data quality tests
+
 
 ## 📚 Documentation
 
@@ -198,6 +284,7 @@ Detailed daily engineering notes are available in the [`docs/`](./docs/) folder.
 - [Day 5: CDC Setup with Debezium](./docs/day-05-cdc.md)
 - [Day 6: Spark Streaming Transformation](./docs/day-06-spark-streaming.md)
 - [Day 7: Kafka to GCS and BigQuery External Table](./docs/day-07-gcs-bigquery.md)
+- [Day 8: dbt Analytics Layer](./docs/day-08-dbt-analytics-layer.md)
 
 ---
 
@@ -215,17 +302,20 @@ This project is being built in **7 phases over 90 days.**
 
 | Phase | Status | Description |
 |-------|--------|-------------|
-| **Phase 1** | ✅ Complete | Infrastructure Skeleton & Architecture Design |
-| **Phase 2** | ✅ Complete | Data Ingestion (CDC) & Streaming Foundation |
-| **Phase 3** | ✅ Complete | Processing & Storage (Spark to BigQuery) |
-| **Phase 4** | 🚧 In Progress | Analytics Layer (dbt Modeling) |
-| **Phase 5** | 📅 Planned | Orchestration & Quality (Airflow) |
-| **Phase 6** | 📅 Planned | Visualization & Storytelling |
-| **Phase 7** | 📅 Planned | Final Optimization & Documentation |
+| Phase 1 | ✅ Complete | Infrastructure & Architecture |
+| Phase 2 | ✅ Complete | CDC & Kafka Streaming |
+| Phase 3 | ✅ Complete | Spark, GCS & BigQuery |
+| Phase 4 | ✅ Complete | dbt Analytics Layer |
+| Phase 5 | 🚧 In Progress | dbt Documentation, Lineage & Advanced Modeling |
+| Phase 6 | 📅 Planned | Airflow Orchestration |
+| Phase 7 | 📅 Planned | Dashboard & Final Optimization |
 
 ---
 
-**Status:** Day 7 of 90 completed
+**Status:** Day 8 of 90 completed
 
+Current pipeline:
+
+PostgreSQL → Debezium → Kafka → Spark → GCS → BigQuery → dbt
 
 

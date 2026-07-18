@@ -15,3 +15,11 @@ __pycache__/
 # GCP Credentials - DO NOT COMMIT
 infra/gcp-credentials/
 *.json
+
+# dbt generated files
+dbt/target/
+dbt/logs/
+dbt/.user.yml
+
+# Local system files
+.DS_Store

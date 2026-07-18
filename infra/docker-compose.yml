@@ -57,7 +57,7 @@ services:
     build:
       context: ..
       dockerfile: infra/Dockerfile.spark
-    image: infra-spark
+    #image: infra-spark
     container_name: infra-spark-1
     ports:
       - "4040:4040"
@@ -86,6 +86,19 @@ services:
   #     - ../spark:/opt/spark-apps
   #   command: ["bash", "-lc", "sleep infinity"] 
 
+  dbt:
+    platform: linux/amd64
+    image: ghcr.io/dbt-labs/dbt-bigquery:1.9.latest
+    container_name: dbt
+    volumes:
+      - ../dbt:/usr/app
+      - ./gcp-credentials:/opt/gcp-credentials:ro
+    working_dir: /usr/app
+    environment:
+      DBT_PROFILES_DIR: /usr/app
+    entrypoint: ["tail", "-f", "/dev/null"]
+    
+  
   postgres:
     image: postgres:16
     environment:
