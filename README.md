@@ -3,7 +3,7 @@
 > Real-time Change Data Capture (CDC) and streaming analytics pipeline for manufacturing systems
 
 [![Project Status](https://img.shields.io/badge/Status-In%20Development-yellow)](https://github.com/yourusername/hybrid-manufacturing-analytics-platform)
-[![Days Completed](https://img.shields.io/badge/Progress-Day%208%2F90-blue)](./docs/)
+[![Days Completed](https://img.shields.io/badge/Progress-Day%209%2F90-blue)](./docs/)
 
 ---
 
@@ -95,22 +95,29 @@ Manufacturing systems generate high-frequency operational events (machine status
 └────────┬────────┘
          │
          ↓
-┌─────────────────┐
-│    BigQuery     │  External Table
-│ machine_events  │
-└────────┬────────┘
-         │ source()
-         ↓
-┌─────────────────┐
-│      dbt        │
-│stg_machine_events│
-└────────┬────────┘
-         │ ref()
-         ↓
-┌─────────────────┐
-│      dbt        │
-│fct_machine_events│
-└─────────────────┘
+┌──────────────────────────┐
+│        BigQuery          │
+│ manufacturing.machine_   │
+│         events           │
+└────────────┬─────────────┘
+             │
+             │ dbt source()
+             ▼
+┌──────────────────────────┐
+│   stg_machine_events     │
+│      dbt Staging         │
+└────────────┬─────────────┘
+             │
+             │ dbt ref()
+             ▼
+┌──────────────────────────┐
+│   fct_machine_events     │
+│      Analytics Mart      │
+└──────────────────────────┘
+             │
+             ├── Data Quality Tests
+             ├── Documentation
+             └── Lineage
 ```
 ---
 
@@ -284,8 +291,8 @@ Detailed daily engineering notes are available in the [`docs/`](./docs/) folder.
 - [Day 5: CDC Setup with Debezium](./docs/day-05-cdc.md)
 - [Day 6: Spark Streaming Transformation](./docs/day-06-spark-streaming.md)
 - [Day 7: Kafka to GCS and BigQuery External Table](./docs/day-07-gcs-bigquery.md)
-- [Day 8: dbt Analytics Layer](./docs/day-08-dbt-analytics-layer.md)
-
+- [Day 8: dbt + BigQuery Analytics Layer](./docs/day-08-dbt-bigquery.md)
+- [Day 9: dbt Testing, Documentation and Lineage](./docs/day-09-dbt-testing-documentation.md)
 ---
 
 ## Use Cases
@@ -312,7 +319,7 @@ This project is being built in **7 phases over 90 days.**
 
 ---
 
-**Status:** Day 8 of 90 completed
+**Status:** Day 9 of 90 completed
 
 Current pipeline:
 

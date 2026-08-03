@@ -90,6 +90,8 @@ services:
     platform: linux/amd64
     image: ghcr.io/dbt-labs/dbt-bigquery:1.9.latest
     container_name: dbt
+    ports:
+      - "8081:8081"
     volumes:
       - ../dbt:/usr/app
       - ./gcp-credentials:/opt/gcp-credentials:ro

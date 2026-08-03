@@ -1,25 +1,45 @@
 version: 2
+
 sources:
   - name: manufacturing
+    description: >
+      Raw manufacturing data stored in BigQuery. The source data is captured
+      from PostgreSQL through Debezium CDC, processed with Kafka and Spark,
+      and written to Google Cloud Storage as Parquet files.
+
     database: manufacturing-analytics-490219
     schema: manufacturing
+
     tables:
       - name: machine_events
-        description: "External BigQuery table over GCS Parquet machine event data"
+        description: >
+          Raw machine event records exposed through a BigQuery external table
+          over Parquet files stored in Google Cloud Storage.
+
         columns:
           - name: event_id
-            description: "Unique event identifier"
+            description: Unique identifier of the machine event.
             tests:
               - not_null
+
           - name: machine_id
-            description: "Machine identifier"
+            description: Identifier of the manufacturing machine that generated the event.
+
           - name: event_type
-            description: "Type of machine event"
+            description: >
+              Type of machine event, such as START, STOP, ERROR, WARNING,
+              or production-related events.
+
           - name: event_time
-            description: "Event timestamp from source system"
+            description: Timestamp indicating when the event occurred.
+
           - name: error_code
-            description: "Machine error code if event is an error"
+            description: Error code reported by the machine, when applicable.
+
           - name: payload
-            description: "Original event payload as JSON string"
+            description: Additional event details stored as a JSON-formatted value.
+
           - name: cdc_op
-            description: "CDC operation type from Debezium"
+            description: >
+              Debezium change operation code. Common values include c for create,
+              u for update, d for delete, and r for snapshot read.

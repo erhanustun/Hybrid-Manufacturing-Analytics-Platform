@@ -2,23 +2,33 @@ version: 2
 
 models:
   - name: fct_machine_events
-    description: "Aggregated machine events"
+    description: >
+      Aggregated fact model containing machine event metrics grouped by
+      machine and event type. This model supports operational reporting,
+      error analysis, and machine activity monitoring.
 
     columns:
       - name: machine_id
+        description: Identifier of the manufacturing machine.
         tests:
           - not_null
 
       - name: event_type
+        description: Type or category of the machine event.
         tests:
           - not_null
 
       - name: total_events
+        description: Total number of events for the machine and event type.
         tests:
           - not_null
 
       - name: error_events
+        description: >
+          Number of ERROR events for the machine and event type combination.
 
       - name: first_event_time
+        description: Earliest event timestamp in the aggregated group.
 
       - name: last_event_time
+        description: Most recent event timestamp in the aggregated group.
